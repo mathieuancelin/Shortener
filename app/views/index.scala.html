@@ -1,0 +1,56 @@
+@()
+
+@main("The simple URL shortener") {
+    	
+    Type your URL <input type="text" id="urlInput" name="urlInput" />
+	<input type="submit" id="shorten" name="shorten" value="Shorten" class="btn-inverse"/>
+	<br/><br/>
+	<div id="message" class="alert"></div>
+	
+	<script type="text/javascript">
+
+		String.prototype.startsWith = function(str) {
+			return (this.match("^"+str)==str)
+		}
+	
+		var log = function(out) {
+			console.log("[TRACE] %s", out);
+		}
+
+		var post = function() {
+			var urlVal = $('#urlInput').val();
+			$.ajax({
+  				type: 'POST',
+  				url: '@routes.Application.addShorten()',
+  				data: { url: urlVal },
+  				success: function(data) {
+					if (data != "wrong") {
+						$('#message').show();
+						if (!urlVal.startsWith("http://")) {
+							urlVal = "http://" + urlVal;
+						}
+						$('#message').html('<p>You can now use<br/><a href="' + data + '">' + data + '</a><br/>instead of<br/><a href="' + urlVal + '">' + urlVal + '</a></p>').removeClass("alert-error").addClass("alert-success");
+					} else {
+						$('#message').show();
+						$('#message').html("Invalid URL").removeClass("alert-success").addClass("alert-error");
+					}
+  				},
+  				error: function(data) {
+  					$('#message').show();
+					$('#message').html("<p>Invalid command. You have to POST a url value.</p>").removeClass("alert-success").addClass("alert-error");
+  				}
+			});
+			$('#urlInput').focus();
+		}
+
+		$('#shorten').click(post);
+		$('#urlInput').keypress(function(evt) {
+			var code = (evt.keyCode ? evt.keyCode : evt.which);
+			if(code == 13) {
+				post();
+			}
+		});
+		$('#message').hide();
+		$('#urlInput').focus();
+	</script>
+} 

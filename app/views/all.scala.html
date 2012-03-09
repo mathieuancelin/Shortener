@@ -1,0 +1,38 @@
+@(urls: List[models.Shorten], base: String)
+
+@main("The simple URL shortener - All URLs") {
+
+	@if(urls.isEmpty) {
+		<div class="alert">
+			Ooops, URL database is empty
+		</div>
+	} else {
+		
+		<table class="table table-stripped table-bordered">
+		<thead>
+			<tr>
+				<td>
+					<b>Short URL</b>
+				</td>
+				<td>
+					<b>Actual URL</b>
+				</td>
+				<td><a href="@routes.Application.deleteAll()" class="btn btn-danger">x</a></td>
+			</tr>
+		</thead>
+		@for(url <- urls) {
+			<tr>
+				<td>
+					<a href="@{base + url.id}">@{base + url.id}</a>
+				</td>
+				<td>
+					<p><a href="@url.url">@url.url</a></p>
+				</td>
+				<td>
+					<a href="@routes.Application.delete(url.id)" class="btn btn-danger">x</a>
+				</td>
+			</tr>
+		}
+		</table>
+	}
+}
